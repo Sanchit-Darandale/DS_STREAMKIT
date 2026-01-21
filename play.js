@@ -97,23 +97,28 @@ class StreamFlowPlayer {
         const params = new URLSearchParams(window.location.search);
         let rawUrl = params.get('url');
     
-        if (rawUrl) {
-            // Rebuild full URL if browser split query params
-            if (!rawUrl.includes('://')) {
-                rawUrl = window.location.search.slice(5);
+        if (!rawUrl) return;
+    
+        try {
+            // Decode repeatedly until stable
+            for (let i = 0; i < 3; i++) {
+                const decoded = decodeURIComponent(rawUrl);
+                if (decoded === rawUrl) break;
+                rawUrl = decoded;
             }
     
-            // Decode safely (handles % and + cases)
-            try {
-                rawUrl = decodeURIComponent(rawUrl.replace(/\+/g, '%20'));
-            } catch {}
+            // 🚫 Prevent recursive DS StreamKit URLs
+            if (rawUrl.startsWith('https://ds-streamkit.vercel.app')) {
+                const nested = new URL(rawUrl).searchParams.get('url');
+                if (nested) rawUrl = nested;
+            }
     
-            this.urlInput.value = rawUrl;
+        } catch {}
     
-            // Ensure UI is ready before loading
-            setTimeout(() => this.loadVideo(), 0);
-        }
+        this.urlInput.value = rawUrl;
+        setTimeout(() => this.loadVideo(), 0);
     }
+
     
     bindEvents() {
         // URL Input
