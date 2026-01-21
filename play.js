@@ -1,3 +1,8 @@
+/**
+ * StreamFlow Video Player
+ * High-quality streaming video player with smart buffering
+ */
+
 class StreamFlowPlayer {
     constructor() {
         // DOM Elements
@@ -94,18 +99,16 @@ class StreamFlowPlayer {
         
         // Focus input on load
         this.urlInput.focus();
+        
+        // Check for URL in query params
         const params = new URLSearchParams(window.location.search);
-        let rawUrl = params.get("url");
-
-        if (rawUrl) {
-            const decoded = decodeURIComponent(rawUrl);
-            this.urlInput.value = decoded;
+        const videoUrl = params.get('url');
+        if (videoUrl) {
+            this.urlInput.value = decodeURIComponent(videoUrl);
             this.loadVideo();
         }
     }
-}
-
-        
+    
     bindEvents() {
         // URL Input
         this.loadBtn.addEventListener('click', () => this.loadVideo());
@@ -359,13 +362,8 @@ class StreamFlowPlayer {
         
         // Update URL params
         const newUrl = new URL(window.location.href);
-
-        // store RAW value only once
-        if (!newUrl.searchParams.has('url')) {
-            newUrl.searchParams.set('url', encodeURIComponent(url));
-            window.history.replaceState({}, '', newUrl);
-        }
-
+        newUrl.searchParams.set('url', encodeURIComponent(url));
+        window.history.replaceState({}, '', newUrl);
     }
     
     async loadDirectVideo(url) {
@@ -1180,6 +1178,19 @@ class StreamFlowPlayer {
         this.urlSection.classList.add('hidden');
         this.playerSection.classList.add('active');
     }
+    
+    formatTime(seconds) {
+        if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+        
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        
+        if (h > 0) {
+            return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    }
 }
 
 // Initialize player when DOM is ready
@@ -1189,6 +1200,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Service Worker for offline support (optional enhancement)
 if ('serviceWorker' in navigator) {
+    // Uncomment to enable service worker
     // navigator.serviceWorker.register('/sw.js');
 }
-
