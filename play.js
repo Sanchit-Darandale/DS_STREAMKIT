@@ -99,25 +99,26 @@ class StreamFlowPlayer {
         
         // Focus input on load
         this.urlInput.focus();
-        
-        // Check for URL in query params
         const params = new URLSearchParams(window.location.search);
-        const rawUrl = params.get('url');
-        if (rawUrl) {
-            const base = decodeURIComponent(decodeURIComponent(rawUrl));
-            const e = params.get('e');
-            const f = params.get('f');
+        let rawUrl = params.get("url");
 
-            let fullUrl = base;
-            if (e && f) {
-                fullUrl += `&e=${e}&f=${f}`;
+        if (rawUrl) {
+            let decoded = rawUrl;
+            for (let i = 0; i < 2; i++) {
+                try {
+                    const next = decodeURIComponent(decoded);
+                    if (next === decoded) break;
+                    decoded = next;
+                } catch {
+                    break;
+                }
             }
 
-            this.urlInput.value = fullUrl;
-            this.loadVideo();
+            this.urlInput.value = decoded;
+            this.loadVideo();   
         }
-        }
-    
+    }
+        
     bindEvents() {
         // URL Input
         this.loadBtn.addEventListener('click', () => this.loadVideo());
