@@ -43,13 +43,14 @@ StreamFlow is a high-performance, browser-based video player designed for **dire
 
 ## Project Structure
 
-├── index.html # UI layout
-├── styles.css # Player styling
-├── player.js # Core player logic
-├── server.js # (Optional) local proxy
+```
+├── index.html          # UI layout
+├── style.css           # Player styling
+├── play.js             # Core player logic
+├── server.js           # (Optional) local proxy
 ├── vercel.json
 └── README.md
-
+```
 
 ---
 
@@ -61,9 +62,9 @@ Serve the files using any static server.
 
 Example using Live Server:
 
-
+```
 http://127.0.0.1:5500/index.html
-
+```
 
 ---
 
@@ -76,79 +77,90 @@ Paste a direct video, HLS, or DASH URL into the input field and press **Stream**
 
 Basic:
 
+```
 index.html?url=ENCODED_VIDEO_URL
-
+```
 
 Signed HLS URLs with additional parameters:
 
-
+```
 index.html?url=ENCODED_M3U8_URL&e=TOKEN&f=FLAG
-
+```
 
 The player reconstructs the full URL internally.
 
 ---
 
-CORS-Blocked Streams (Local Proxy)
+## CORS-Blocked Streams (Local Proxy)
 
 Many platforms block cross-origin media playback. StreamFlow includes an optional local proxy to bypass these restrictions.
 
-Start the Proxy
-node server.js
+### Start the Proxy
 
+```
+node server.js
+```
 
 The proxy runs on:
 
+```
 http://localhost:4000
+```
 
-Enable Proxy in UI
+### Enable Proxy in UI
 
-Enable:
-
-Use Local Proxy
-
+Enable the **Use Local Proxy** option in the player interface.
 
 The player rewrites requests to:
 
+```
 http://localhost:4000/proxy?url=ENCODED_URL
+```
 
-Proxy Capabilities
+### Proxy Capabilities
 
-Spoofs required headers (Referer, Origin, User-Agent)
+- Spoofs required headers (Referer, Origin, User-Agent)
+- Supports binary streaming
+- Forwards HTTP Range headers (required for seeking)
+- Works with signed and expiring HLS URLs
 
-Supports binary streaming
+---
 
-Forwards HTTP Range headers (required for seeking)
+## Keyboard Shortcuts
 
-Works with signed and expiring HLS URLs
+| Key | Action |
+|-----|--------|
+| Space / K | Play / Pause |
+| F | Fullscreen |
+| M | Mute |
+| P | Picture-in-Picture |
+| ← / J | Back 10 seconds |
+| → / L | Forward 10 seconds |
+| ↑ | Volume up |
+| ↓ | Volume down |
+| 0–9 | Jump to 0–90% |
+| ? | Show shortcuts |
 
-Keyboard Shortcuts
-Key	Action
-Space / K	Play / Pause
-F	Fullscreen
-M	Mute
-P	Picture-in-Picture
-← / J	Back 10 seconds
-→ / L	Forward 10 seconds
-↑	Volume up
-↓	Volume down
-0–9	Jump to 0–90%
-?	Show shortcuts
-Limitations
+---
 
-DRM-protected streams are not supported
+## Limitations
 
-Signed URLs expire and must be refreshed
+- DRM-protected streams are not supported
+- Signed URLs expire and must be refreshed
+- Proxy is required for strict CORS platforms
+- Browsers may cap extreme playback speeds
 
-Proxy is required for strict CORS platforms
+---
 
-Browsers may cap extreme playback speeds
-
-License
+## License
 
 This project is provided for educational and experimental use only.
 Ensure you have legal permission to stream any content you load.
 
-Credits
-Yashu Developer For This Project
-Maintained by SILENT GHOST ⚡
+---
+
+## Credits
+
+**Yashu Developer** — For This Project
+
+**Maintained by SILENT GHOST** ⚡
