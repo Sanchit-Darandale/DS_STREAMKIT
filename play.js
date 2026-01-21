@@ -1,8 +1,3 @@
-/**
- * StreamFlow Video Player
- * High-quality streaming video player with smart buffering
- */
-
 class StreamFlowPlayer {
     constructor() {
         // DOM Elements
@@ -103,21 +98,13 @@ class StreamFlowPlayer {
         let rawUrl = params.get("url");
 
         if (rawUrl) {
-            let decoded = rawUrl;
-            for (let i = 0; i < 2; i++) {
-                try {
-                    const next = decodeURIComponent(decoded);
-                    if (next === decoded) break;
-                    decoded = next;
-                } catch {
-                    break;
-                }
-            }
-
+            const decoded = decodeURIComponent(rawUrl);
             this.urlInput.value = decoded;
-            this.loadVideo();   
+            this.loadVideo();
         }
     }
+}
+
         
     bindEvents() {
         // URL Input
@@ -372,8 +359,13 @@ class StreamFlowPlayer {
         
         // Update URL params
         const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set('url', encodeURIComponent(url));
-        window.history.replaceState({}, '', newUrl);
+
+        // store RAW value only once
+        if (!newUrl.searchParams.has('url')) {
+            newUrl.searchParams.set('url', encodeURIComponent(url));
+            window.history.replaceState({}, '', newUrl);
+        }
+
     }
     
     async loadDirectVideo(url) {
