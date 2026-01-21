@@ -1,8 +1,3 @@
-/**
- * StreamFlow Video Player
- * High-quality streaming video player with smart buffering
- */
-
 class StreamFlowPlayer {
     constructor() {
         // DOM Elements
@@ -91,21 +86,32 @@ class StreamFlowPlayer {
         
         this.init();
     }
-    
+
     init() {
         this.bindEvents();
         this.setupVideoEvents();
         this.updateVolumeUI();
-        
-        // Focus input on load
+    
         this.urlInput.focus();
-        
-        // Check for URL in query params
+    
         const params = new URLSearchParams(window.location.search);
-        const videoUrl = params.get('url');
-        if (videoUrl) {
-            this.urlInput.value = decodeURIComponent(videoUrl);
-            this.loadVideo();
+        let rawUrl = params.get('url');
+    
+        if (rawUrl) {
+            // Rebuild full URL if browser split query params
+            if (!rawUrl.includes('://')) {
+                rawUrl = window.location.search.slice(5);
+            }
+    
+            // Decode safely (handles % and + cases)
+            try {
+                rawUrl = decodeURIComponent(rawUrl.replace(/\+/g, '%20'));
+            } catch {}
+    
+            this.urlInput.value = rawUrl;
+    
+            // Ensure UI is ready before loading
+            setTimeout(() => this.loadVideo(), 0);
         }
     }
     
@@ -137,7 +143,11 @@ class StreamFlowPlayer {
             isDragging = true;
             this.seek(e);
         });
-        
+
+        document.querySelector('.logo').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+
         document.addEventListener('mousemove', (e) => {
             if (isDragging) {
                 this.seek(e);
@@ -317,8 +327,12 @@ class StreamFlowPlayer {
         // Volume change
         this.video.addEventListener('volumechange', () => this.updateVolumeUI());
     }
-    
+
     loadVideo() {
+        this.showPlayerSection();
+        this.hideError();
+        this.showLoading();
+    
         let url = this.urlInput.value.trim();
         if (!url) {
             this.urlInput.focus();
@@ -335,9 +349,6 @@ class StreamFlowPlayer {
         
         this.currentUrl = url;
         this.originalUrl = this.urlInput.value.trim(); // Store original for display
-        this.hideError();
-        this.showPlayerSection();
-        this.showLoading();
         
         // Reset network speed tracking
         this.lastBufferTime = 0;
